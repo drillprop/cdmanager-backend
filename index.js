@@ -1,33 +1,36 @@
 const { ApolloServer, gql } = require('apollo-server');
-
-const albums = [
-  { artist: 'Black Sabbath', title: 'Paranoid', year: 1969, image: 'url' },
-  { artist: 'Iron Maiden', title: 'Killers', year: 1972, image: 'url' },
-  { artist: 'Led Zeppelin', title: 'IV', year: 1972, image: 'url' },
-  { artist: 'Cream', title: 'Disraeli Gears', year: 1968, image: 'url' },
-  {
-    artist: 'Arthur Brown',
-    title: 'Crazy World of the Arthur Brown',
-    year: 1969,
-    image: 'url'
-  }
-];
+const { apikey } = require('./config.js');
+const fetch = require('node-fetch');
 
 const typeDefs = gql`
   type Query {
-    albums: [Album]
+    albums(search: String!): [Album]
   }
   type Album {
     title: String!
     artist: String!
-    year: Int
     image: String
   }
 `;
 
 const resolvers = {
   Query: {
-    albums: () => albums
+    albums: (parent, args, ctx, info) => {
+      let smth = args.search;
+      let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${smth}&api_key=${apikey}&format=json`;
+      return fetch(baseUrl)
+        .then(res => res.json())
+        .then(json => json.results.albummatches.album)
+        .then(album => {
+          return album.map(item => {
+            return {
+              title: item.name,
+              artist: item.artist,
+              image: item.image[3]['#text']
+            };
+          });
+        });
+    }
   }
 };
 
