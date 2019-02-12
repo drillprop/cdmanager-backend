@@ -15,21 +15,20 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    albums: (parent, args, ctx, info) => {
-      let smth = args.search;
-      let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${smth}&api_key=${apikey}&format=json`;
-      return fetch(baseUrl)
-        .then(res => res.json())
-        .then(json => json.results.albummatches.album)
-        .then(album => {
-          return album.map(item => {
-            return {
-              title: item.name,
-              artist: item.artist,
-              image: item.image[3]['#text']
-            };
-          });
-        });
+    albums: async (parent, args, ctx, info) => {
+      let { search } = args;
+      let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${search}&api_key=${apikey}&format=json`;
+      let res = await fetch(baseUrl);
+      let json = await res.json();
+      let album = await json.results.albummatches.album;
+      let albumQuery = album.map(item => {
+        return {
+          title: item.name,
+          artist: item.artist,
+          image: item.image[3]['#text']
+        };
+      });
+      return albumQuery;
     }
   }
 };
