@@ -10,6 +10,7 @@ const typeDefs = gql`
     title: String!
     artist: String!
     image: String
+    id: String!
   }
 `;
 
@@ -25,7 +26,8 @@ const resolvers = {
         return {
           title: item.name,
           artist: item.artist,
-          image: item.image[3]['#text']
+          image: item.image[2]['#text'],
+          id: item.mbid
         };
       });
       return albumQuery;
