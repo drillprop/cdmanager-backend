@@ -6,11 +6,14 @@ const typeDefs = gql`
   type Query {
     albums(search: String!): [Album]
   }
+  type Mutation {
+    createCd(title: String!, artist: String!, image: String, id: String): Album
+  }
   type Album {
     title: String!
     artist: String!
     image: String
-    id: String!
+    id: String
   }
 `;
 
@@ -31,6 +34,20 @@ const resolvers = {
         };
       });
       return albumQuery;
+    }
+  },
+  Mutation: {
+    createCd: async (parent, args, ctx, info) => {
+      let { title, artist, image, id } = args;
+      global.albums = global.albums || [];
+      let album = {
+        title,
+        artist,
+        image,
+        id
+      };
+      global.albums.push(album);
+      return album;
     }
   }
 };
