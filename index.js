@@ -4,6 +4,7 @@ const fetch = require('node-fetch');
 
 const typeDefs = gql`
   type Query {
+    albumsdb(search: String!): [Album]
     albums(search: String!): [Album]
   }
   type Mutation {
@@ -19,13 +20,13 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    albums: async (parent, args, ctx, info) => {
-      let { search } = args;
+    albumsdb: async (parent, args, ctx, info) => {
+      const { search } = args;
       let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${search}&api_key=${apikey}&format=json`;
-      let res = await fetch(baseUrl);
-      let json = await res.json();
-      let album = await json.results.albummatches.album;
-      let albumQuery = album.map(item => {
+      const res = await fetch(baseUrl);
+      const json = await res.json();
+      const album = await json.results.albummatches.album;
+      const albumQuery = album.map(item => {
         return {
           title: item.name,
           artist: item.artist,
@@ -34,6 +35,18 @@ const resolvers = {
         };
       });
       return albumQuery;
+    },
+    albums: async (parent, args, ctx, info) => {
+      const { search } = args;
+      const lowerSearch = search.toLowerCase();
+      if (global.albums) {
+        return global.albums.filter(album => {
+          const { title, artist } = album;
+          if (title.includes(lowerSearch) || artist.includes(lowerSearch)) {
+            return album;
+          }
+        });
+      }
     }
   },
   Mutation: {
@@ -60,3 +73,6 @@ const server = new ApolloServer({
 server.listen().then(({ url }) => {
   console.log(`server ready at ${url}`);
 });
+
+// todo
+// connect to firebase
