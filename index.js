@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 
 const typeDefs = gql`
   type Query {
-    albumsdb(search: String!): [Album]
+    albumslastfm(search: String!): [Album]
     albums(search: String!): [Album]
   }
   type Mutation {
@@ -20,7 +20,7 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    albumsdb: async (parent, args, ctx, info) => {
+    albumslastfm: async (parent, args, ctx, info) => {
       const { search } = args;
       let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${search}&api_key=${apikey}&format=json`;
       const res = await fetch(baseUrl);
