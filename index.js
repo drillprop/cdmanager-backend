@@ -22,7 +22,6 @@ const albumSchema = new mongoose.Schema({
 });
 
 const Album = mongoose.model('Album', albumSchema);
-const davidBowie = new Album({ artist: 'david bowie', title: 'hunky dory' });
 
 const typeDefs = gql`
   type Query {
@@ -74,14 +73,8 @@ const resolvers = {
   Mutation: {
     createCd: async (parent, args, ctx, info) => {
       let { title, artist, image, id } = args;
-      global.albums = global.albums || [];
-      let album = {
-        title,
-        artist,
-        image,
-        id
-      };
-      global.albums.push(album);
+      const album = new Album({ title, artist, image });
+      await album.save();
       return album;
     }
   }
@@ -95,6 +88,3 @@ const server = new ApolloServer({
 server.listen().then(({ url }) => {
   console.log(`server ready at ${url}`);
 });
-
-// todo
-// connect to firebase
