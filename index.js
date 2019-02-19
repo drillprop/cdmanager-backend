@@ -1,7 +1,7 @@
 const { ApolloServer, gql } = require('apollo-server');
 const { apikey } = require('./config.js');
 const fetch = require('node-fetch');
-const Album = require('./src/db');
+const { Album } = require('./src/db');
 
 const typeDefs = gql`
   type Query {
@@ -37,17 +37,14 @@ const resolvers = {
       });
       return albumQuery;
     },
-    albums: async (parent, args, ctx, info) => {
-      const { search } = args;
-      const lowerSearch = search.toLowerCase();
-      if (global.albums) {
-        return global.albums.filter(album => {
-          const { title, artist } = album;
-          if (title.includes(lowerSearch) || artist.includes(lowerSearch)) {
-            return album;
-          }
-        });
-      }
+    albums: async (parent, { search }, ctx, info) => {
+      return Album.find(
+        {
+          title: { $regex: search, $options: 'i' }
+        } || {
+          artist: { $regex: search, $options: 'i' }
+        }
+      );
     }
   },
   Mutation: {
