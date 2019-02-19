@@ -1,22 +1,7 @@
-const { ApolloServer, gql } = require('apollo-server');
+const { ApolloServer } = require('apollo-server');
 const { apikey } = require('./config.js');
 const fetch = require('node-fetch');
-
-const typeDefs = gql`
-  type Query {
-    albumslastfm(search: String!): [Album]
-    albums(search: String!): [Album]
-  }
-  type Mutation {
-    createCd(title: String!, artist: String!, image: String, id: String): Album
-  }
-  type Album {
-    title: String!
-    artist: String!
-    image: String
-    id: String
-  }
-`;
+const typeDefs = require('./src/schema.graphql');
 
 const resolvers = {
   Query: {
