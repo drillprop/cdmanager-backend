@@ -49,7 +49,7 @@ const resolvers = {
   },
   Mutation: {
     createCd: async (parent, args, ctx, info) => {
-      let { title, artist, image, id } = args;
+      let { title, artist, image } = args;
       const album = new Album({ title, artist, image });
       await album.save();
       return album;
