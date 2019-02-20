@@ -38,13 +38,7 @@ const resolvers = {
       return albumQuery;
     },
     albums: async (parent, { search }, ctx, info) => {
-      return Album.find(
-        {
-          title: { $regex: search, $options: 'i' }
-        } || {
-          artist: { $regex: search, $options: 'i' }
-        }
-      );
+      return Album.find({ $text: { $search: search } });
     }
   },
   Mutation: {

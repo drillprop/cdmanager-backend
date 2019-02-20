@@ -17,6 +17,7 @@ const albumSchema = new mongoose.Schema({
   image: String,
   id: String
 });
+albumSchema.index({ artist: 'text', title: 'text' });
 
 const Album = mongoose.model('Album', albumSchema);
 module.exports = { Album };
