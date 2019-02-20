@@ -4,7 +4,7 @@ mongoose.connect(
   `mongodb+srv://test:${mongoPassword}@cdmanager-92rag.mongodb.net/test?retryWrites=true`,
   { useNewUrlParser: true }
 );
-
+mongoose.set('useCreateIndex', true);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
