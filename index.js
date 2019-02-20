@@ -31,8 +31,7 @@ const resolvers = {
         return {
           title: item.name,
           artist: item.artist,
-          image: item.image[2]['#text'],
-          id: item.mbid
+          image: item.image[2]['#text']
         };
       });
       return albumQuery;

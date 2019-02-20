@@ -7,16 +7,13 @@ mongoose.connect(
 mongoose.set('useCreateIndex', true);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  // smth
-});
 
 const albumSchema = new mongoose.Schema({
   artist: String,
   title: String,
-  image: String,
-  id: String
+  image: String
 });
+
 albumSchema.index({ artist: 'text', title: 'text' });
 
 const Album = mongoose.model('Album', albumSchema);
