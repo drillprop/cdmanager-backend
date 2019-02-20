@@ -42,7 +42,10 @@ const resolvers = {
           .hint({ $natural: -1 })
           .limit(last);
       }
-      return Album.find({ $text: { $search: search } });
+      return Album.find(
+        { $text: { $search: search } },
+        { score: { $meta: 'textScore' } }
+      ).sort({ score: { $meta: 'textScore' } });
     }
   },
   Mutation: {
