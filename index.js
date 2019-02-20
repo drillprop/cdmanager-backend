@@ -6,7 +6,7 @@ const { Album } = require('./src/db');
 const typeDefs = gql`
   type Query {
     albumslastfm(search: String!): [Album]
-    albums(search: String!): [Album]
+    albums(search: String, last: Int): [Album]
   }
   type Mutation {
     createCd(title: String!, artist: String!, image: String, id: String): Album
@@ -37,7 +37,12 @@ const resolvers = {
       });
       return albumQuery;
     },
-    albums: async (parent, { search }, ctx, info) => {
+    albums: async (parent, { search, last = 5 }, ctx, info) => {
+      if (!search) {
+        return Album.find({})
+          .hint({ $natural: -1 })
+          .limit(last);
+      }
       return Album.find({ $text: { $search: search } });
     }
   },
