@@ -1,7 +1,7 @@
 const { ApolloServer, gql } = require('apollo-server');
 const { apikey } = require('./config.js');
 const fetch = require('node-fetch');
-const { Album } = require('./src/db');
+const { Album, User } = require('./src/db');
 
 const typeDefs = gql`
   type Query {
@@ -9,7 +9,21 @@ const typeDefs = gql`
     albums(search: String, last: Int): [Album]
   }
   type Mutation {
+    createUser(
+      name: String!
+      email: String!
+      password: String!
+      avatar: String
+    ): User
     createCd(title: String!, artist: String!, image: String, id: String): Album
+  }
+  type User {
+    name: String!
+    email: String!
+    password: String!
+    avatar: String
+    id: String!
+    albums: [Album]
   }
   type Album {
     title: String!
@@ -54,6 +68,12 @@ const resolvers = {
       const album = new Album({ title, artist, image });
       await album.save();
       return album;
+    },
+    createUser: async (parent, args, ctx, info) => {
+      const { name, password, email, avatar } = args;
+      const user = new User({ name, password, email, avatar });
+      await user.save();
+      return user;
     }
   }
 };
