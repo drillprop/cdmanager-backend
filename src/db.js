@@ -8,13 +8,26 @@ mongoose.set('useCreateIndex', true);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
-const albumSchema = new mongoose.Schema({
+const { Schema, model } = mongoose;
+
+const albumSchema = new Schema({
   artist: String,
   title: String,
   image: String
 });
 
 albumSchema.index({ artist: 'text', title: 'text' });
+const Album = model('Album', albumSchema);
 
-const Album = mongoose.model('Album', albumSchema);
-module.exports = { Album };
+const userSchema = new Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  password: { type: String, required: true },
+  date: { type: Date, default: Date.now },
+  avatar: String,
+  albums: [{ type: Schema.Types.ObjectId, ref: 'Album' }]
+});
+
+const User = model('Model', userSchema);
+
+module.exports = { Album, User };
