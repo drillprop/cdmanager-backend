@@ -1,4 +1,5 @@
-const { ApolloServer, gql } = require('apollo-server');
+const { ApolloServer, gql } = require('apollo-server-express');
+const express = require('express');
 const { apikey } = require('./config.js');
 const fetch = require('node-fetch');
 const { Album, User } = require('./src/db');
@@ -78,11 +79,13 @@ const resolvers = {
   }
 };
 
+const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers
 });
+server.applyMiddleware({ app, path: '/' });
 
-server.listen().then(({ url }) => {
-  console.log(`server ready at ${url}`);
+app.listen({ port: 4000 }, () => {
+  console.log(`server ready at ${server.graphqlPath}`);
 });
