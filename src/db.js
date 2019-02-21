@@ -20,8 +20,8 @@ albumSchema.index({ artist: 'text', title: 'text' });
 const Album = model('Album', albumSchema);
 
 const userSchema = new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
+  name: { type: String, unique: true, required: true },
+  email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   date: { type: Date, default: Date.now },
   avatar: String,
