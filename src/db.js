@@ -28,6 +28,6 @@ const userSchema = new Schema({
   albums: [{ type: Schema.Types.ObjectId, ref: 'Album' }]
 });
 
-const User = model('Model', userSchema);
+const User = model('Users', userSchema);
 
 module.exports = { Album, User };
