@@ -2,7 +2,7 @@ const { ApolloServer, gql } = require('apollo-server-express');
 const express = require('express');
 const { apikey } = require('./config.js');
 const fetch = require('node-fetch');
-const { Album, User } = require('./src/db');
+const { Album, User, db } = require('./src/db');
 
 const typeDefs = gql`
   type Query {
@@ -52,6 +52,7 @@ const resolvers = {
       return albumQuery;
     },
     albums: async (parent, { search, last = 5 }, ctx, info) => {
+      console.log(ctx.db);
       if (!search) {
         return Album.find({})
           .hint({ $natural: -1 })
@@ -82,9 +83,11 @@ const resolvers = {
 const app = express();
 const server = new ApolloServer({
   typeDefs,
-  resolvers
+  resolvers,
+  context: req => ({ ...req, db })
 });
 server.applyMiddleware({ app, path: '/' });
+app.use(cookieParser());
 
 app.listen({ port: 4000 }, () => {
   console.log(`server ready at ${server.graphqlPath}`);
