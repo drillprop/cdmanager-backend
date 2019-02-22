@@ -12,6 +12,7 @@
   "dependencies": {
     "apollo-server": "^2.4.0",
     "apollo-server-express": "^2.4.5",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
     "graphql": "^14.1.1",

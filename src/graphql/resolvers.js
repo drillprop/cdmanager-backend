@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import bcrypt from 'bcryptjs';
 import { apikey } from '../../config';
 import Album from '../models/Album';
 import User from '../models/User';
@@ -41,7 +42,8 @@ const resolvers = {
       return album;
     },
     createUser: async (parent, args, ctx, info) => {
-      const { name, password, email, avatar } = args;
+      const { name, email, avatar } = args;
+      const password = await bcrypt.hash(args.password, 10);
       const user = new User({ name, password, email, avatar });
       await user.save();
       return user;
