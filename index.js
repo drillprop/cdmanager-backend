@@ -1,8 +1,8 @@
-const { ApolloServer, gql } = require('apollo-server-express');
-const express = require('express');
-const { apikey } = require('./config.js');
-const fetch = require('node-fetch');
-const { Album, User, db } = require('./src/db');
+import { ApolloServer, gql } from 'apollo-server-express';
+import express from 'express';
+import { apikey } from './config.js';
+import fetch from 'node-fetch';
+import { Album, User, db } from './src/db';
 
 const typeDefs = gql`
   type Query {
@@ -87,7 +87,6 @@ const server = new ApolloServer({
   context: req => ({ ...req, db })
 });
 server.applyMiddleware({ app, path: '/' });
-app.use(cookieParser());
 
 app.listen({ port: 4000 }, () => {
   console.log(`server ready at ${server.graphqlPath}`);
