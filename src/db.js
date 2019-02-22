@@ -6,6 +6,9 @@ mongoose.connect(
   { useNewUrlParser: true }
 );
 mongoose.set('useCreateIndex', true);
-export const db = mongoose.connection;
+
+const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
+
+export default db;

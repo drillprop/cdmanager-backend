@@ -2,7 +2,7 @@ import { ApolloServer, gql } from 'apollo-server-express';
 import express from 'express';
 import { apikey } from '../config.js';
 import fetch from 'node-fetch';
-import { db } from './db';
+import db from './db';
 import Album from './models/Album';
 import User from './models/User';
 
