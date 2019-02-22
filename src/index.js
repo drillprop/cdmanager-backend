@@ -1,8 +1,8 @@
 import { ApolloServer, gql } from 'apollo-server-express';
 import express from 'express';
-import { apikey } from './config.js';
+import { apikey } from '../config.js';
 import fetch from 'node-fetch';
-import { Album, User, db } from './src/db';
+import { Album, User, db } from './db';
 
 const typeDefs = gql`
   type Query {
