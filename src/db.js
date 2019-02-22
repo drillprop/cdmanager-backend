@@ -1,10 +1,7 @@
 import mongoose from 'mongoose';
-import { mongoPassword } from '../config';
+import 'dotenv/config';
 
-mongoose.connect(
-  `mongodb+srv://test:${mongoPassword}@cdmanager-92rag.mongodb.net/test?retryWrites=true`,
-  { useNewUrlParser: true }
-);
+mongoose.connect(process.env.MONGODB_PATH, { useNewUrlParser: true });
 mongoose.set('useCreateIndex', true);
 
 const db = mongoose.connection;

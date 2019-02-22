@@ -1,13 +1,16 @@
 import fetch from 'node-fetch';
 import bcrypt from 'bcryptjs';
-import { apikey } from '../../../config';
+import 'dotenv/config';
 import Album from '../../models/Album';
 import User from '../../models/User';
 
 const Query = {
   albumslastfm: async (parent, args, ctx, info) => {
     const { search } = args;
-    let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${search}&api_key=${apikey}&format=json`;
+    let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${search}&api_key=${
+      process.env.LASTFM_API_KEY
+    }&format=json`;
+    console.log(baseUrl);
     const res = await fetch(baseUrl);
     const json = await res.json();
     const album = await json.results.albummatches.album;
