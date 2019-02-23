@@ -1,7 +1,6 @@
 import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import db from './db';
 import jwt from 'jsonwebtoken';
 import Query from './graphql/resolvers/Query';
 import Mutation from './graphql/resolvers/Mutation';
@@ -19,7 +18,6 @@ const server = new ApolloServer({
 app.use(cookieParser());
 app.use((req, res, next) => {
   const token = req.cookies;
-  console.log(token);
   if (token) {
     const { userId } = jwt.verify(token, process.env.APP_SECRET);
     req.userId = userId;
