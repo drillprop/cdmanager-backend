@@ -32,6 +32,9 @@ const Query = {
       { $text: { $search: search } },
       { score: { $meta: 'textScore' } }
     ).sort({ score: { $meta: 'textScore' } });
+  },
+  me: async (parent, args, ctx, info) => {
+    return User;
   }
 };
 
