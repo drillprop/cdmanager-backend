@@ -10,7 +10,6 @@ const Query = {
     let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${search}&api_key=${
       process.env.LASTFM_API_KEY
     }&format=json`;
-    console.log(baseUrl);
     const res = await fetch(baseUrl);
     const json = await res.json();
     const album = await json.results.albummatches.album;
@@ -24,7 +23,6 @@ const Query = {
     return albumQuery;
   },
   albums: async (parent, { search, last = 5 }, ctx, info) => {
-    console.log(ctx.db);
     if (!search) {
       return Album.find({})
         .hint({ $natural: -1 })
