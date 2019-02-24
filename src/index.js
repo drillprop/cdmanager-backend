@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import Query from './graphql/resolvers/Query';
 import Mutation from './graphql/resolvers/Mutation';
 import typeDefs from './graphql/schema';
+import db from './db';
 
 const resolvers = { Query, Mutation };
 
@@ -12,7 +13,7 @@ const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: req => ({ ...req })
+  context: req => ({ ...req, db })
 });
 
 app.use(cookieParser());
