@@ -20,8 +20,8 @@ const Mutation = {
     const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     // set cookie with token
     ctx.res.cookie('token', token, {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 365 // generalnie przez rok - pracujemy na milisekundach
+      // httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365
     });
     return user;
   }
