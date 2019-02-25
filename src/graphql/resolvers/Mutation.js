@@ -12,7 +12,7 @@ const Mutation = {
     await album.save();
     return album;
   },
-  createUser: async (parent, args, ctx, info) => {
+  signup: async (parent, args, ctx, info) => {
     const { name, email, avatar } = args;
     const password = await bcrypt.hash(args.password, 10);
     const user = new User({ name, password, email, avatar });
