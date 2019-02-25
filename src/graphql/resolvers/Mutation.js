@@ -7,6 +7,10 @@ import 'dotenv/config';
 
 const Mutation = {
   createCd: async (parent, args, ctx, info) => {
+    const user = await User.findById(ctx.req.userId);
+    if (!user) {
+      throw new Error('Sign in to add a cd');
+    }
     let { title, artist, image } = args;
     const album = new Album({ title, artist, image });
     await album.save();
