@@ -34,7 +34,10 @@ const Query = {
     ).sort({ score: { $meta: 'textScore' } });
   },
   me: async (parent, args, ctx, info) => {
-    return User;
+    if (!ctx.req.userId) {
+      return null;
+    }
+    return User.findById(ctx.req.userId);
   }
 };
 
