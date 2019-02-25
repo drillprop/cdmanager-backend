@@ -13,6 +13,7 @@ const typeDefs = gql`
       password: String!
       avatar: String
     ): User
+    signin(email: String!, password: String!): User
     createCd(title: String!, artist: String!, image: String, id: String): Album
   }
   type User {

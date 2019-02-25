@@ -24,6 +24,24 @@ const Mutation = {
       maxAge: 1000 * 60 * 60 * 24 * 365
     });
     return user;
+  },
+  signin: async (parent, args, ctx, info) => {
+    const { email, password } = args;
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error('Password or email is incorrect');
+    }
+    const correctPasword = await bcrypt.compare(password, user.password);
+    if (!correctPasword) {
+      throw new Error('Password or email is incorrect');
+    }
+    const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
+    // set cookie with token
+    ctx.res.cookie('token', token, {
+      // httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365
+    });
+    return user;
   }
 };
 
