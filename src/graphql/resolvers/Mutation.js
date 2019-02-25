@@ -42,6 +42,10 @@ const Mutation = {
       maxAge: 1000 * 60 * 60 * 24 * 365
     });
     return user;
+  },
+  signout: (parent, args, ctx, info) => {
+    ctx.res.clearCookie('token');
+    return { message: 'succes' };
   }
 };
 

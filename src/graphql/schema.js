@@ -1,6 +1,9 @@
 import { gql } from 'apollo-server-express';
 
 const typeDefs = gql`
+  type SuccessMessage {
+    message: String
+  }
   type Query {
     albumslastfm(search: String!): [Album]
     albums(search: String, last: Int): [Album]
@@ -14,6 +17,7 @@ const typeDefs = gql`
       avatar: String
     ): User
     signin(email: String!, password: String!): User
+    signout: SuccessMessage
     createCd(title: String!, artist: String!, image: String, id: String): Album
   }
   type User {
