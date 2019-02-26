@@ -12,8 +12,14 @@ const Mutation = {
       throw new Error('Sign in to add a cd');
     }
     let { title, artist, image } = args;
-    const album = new Album({ title, artist, image });
-    await album.save();
+    console.log(user._id);
+    const album = new Album({
+      title,
+      artist,
+      image
+    });
+    await user.albums.push(album);
+    user.save();
     return album;
   },
   signup: async (parent, args, ctx, info) => {

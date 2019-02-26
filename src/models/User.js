@@ -6,7 +6,7 @@ const userSchema = new Schema({
   password: { type: String, required: true },
   date: { type: Date, default: Date.now },
   avatar: String,
-  albums: [{ type: Schema.Types.ObjectId, ref: 'Album' }]
+  albums: []
 });
 
 const User = model('Users', userSchema);
