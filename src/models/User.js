@@ -1,4 +1,5 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
+import { albumSchema } from './Album';
 
 const userSchema = new Schema({
   name: { type: String, unique: true, required: true },
@@ -6,7 +7,7 @@ const userSchema = new Schema({
   password: { type: String, required: true },
   date: { type: Date, default: Date.now },
   avatar: String,
-  albums: []
+  albums: [albumSchema]
 });
 
 const User = model('Users', userSchema);

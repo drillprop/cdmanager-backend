@@ -1,9 +1,8 @@
-import fetch from 'node-fetch';
 import bcrypt from 'bcryptjs';
+import 'dotenv/config';
+import jwt from 'jsonwebtoken';
 import Album from '../../models/Album';
 import User from '../../models/User';
-import jwt from 'jsonwebtoken';
-import 'dotenv/config';
 
 const Mutation = {
   createCd: async (parent, args, ctx, info) => {
@@ -18,8 +17,10 @@ const Mutation = {
       artist,
       image
     });
+    await album.save();
     await user.albums.push(album);
-    user.save();
+    await user.save();
+
     return album;
   },
   signup: async (parent, args, ctx, info) => {

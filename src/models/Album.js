@@ -1,6 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
-const albumSchema = new Schema({
+export const albumSchema = new Schema({
   artist: String,
   title: String,
   image: String
