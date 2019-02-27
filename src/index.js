@@ -1,12 +1,11 @@
 import { ApolloServer } from 'apollo-server-express';
-import express from 'express';
 import cookieParser from 'cookie-parser';
+import express from 'express';
 import jwt from 'jsonwebtoken';
-import Query from './graphql/resolvers/Query';
-import Mutation from './graphql/resolvers/Mutation';
-import typeDefs from './graphql/schema';
 import db from './db';
-
+import Mutation from './graphql/resolvers/Mutation';
+import Query from './graphql/resolvers/Query';
+import typeDefs from './graphql/schema';
 const resolvers = { Query, Mutation };
 
 const app = express();
@@ -26,7 +25,9 @@ app.use((req, res, next) => {
   next();
 });
 
-server.applyMiddleware({ app, path: '/' });
+const corsOptions = { credentials: true, origin: process.env.FRONTEND_URL };
+
+server.applyMiddleware({ app, path: '/', cors: corsOptions });
 
 app.listen({ port: 4000 }, () => {
   console.log(`server ready at ${server.graphqlPath}`);
