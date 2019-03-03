@@ -1,5 +1,6 @@
 import { ApolloServer } from 'apollo-server-express';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import db from './db';
@@ -15,6 +16,7 @@ const server = new ApolloServer({
   context: req => ({ ...req, db })
 });
 
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(cookieParser());
 app.use((req, res, next) => {
   const { token } = req.cookies;
@@ -25,10 +27,13 @@ app.use((req, res, next) => {
   next();
 });
 
-const corsOptions = { credentials: true, origin: process.env.FRONTEND_URL };
-
-server.applyMiddleware({ app, path: '/', cors: corsOptions });
+server.applyMiddleware({
+  app,
+  path: '/'
+});
 
 app.listen({ port: 4000 }, () => {
   console.log(`server ready at ${server.graphqlPath}`);
 });
+
+// todo try setting cors without cors package
