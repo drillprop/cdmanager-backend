@@ -1,6 +1,5 @@
-import fetch from 'node-fetch';
-import bcrypt from 'bcryptjs';
 import 'dotenv/config';
+import fetch from 'node-fetch';
 import Album from '../../models/Album';
 import User from '../../models/User';
 
