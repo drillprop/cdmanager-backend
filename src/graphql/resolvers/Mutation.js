@@ -26,12 +26,12 @@ const Mutation = {
   signup: async (parent, args, ctx, info) => {
     const { name, email, avatar } = args;
     const password = await bcrypt.hash(args.password, 10);
-    const user = new User({ name, password, email, avatar });
-    await user.save();
+    const user = await new User({ name, password, email, avatar });
+    user.save();
     const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     // set cookie with token
     ctx.res.cookie('token', token, {
-      // httpOnly: true,
+      httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 365
     });
     return user;
@@ -49,7 +49,7 @@ const Mutation = {
     const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     // set cookie with token
     ctx.res.cookie('token', token, {
-      // httpOnly: true,
+      httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 365
     });
     return user;
