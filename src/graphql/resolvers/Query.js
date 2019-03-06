@@ -25,10 +25,12 @@ const Query = {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
+    const user = await User.findById(ctx.req.userId);
     if (!search) {
-      return Album.find({})
-        .hint({ $natural: -1 })
-        .limit(last);
+      if (user.albums.length > 4) {
+        return user.albums.splice(user.albums.length - 4, 4).reverse();
+      }
+      return user.albums.reverse();
     }
     return Album.find(
       { $text: { $search: search } },
