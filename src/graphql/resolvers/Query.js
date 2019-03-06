@@ -22,6 +22,9 @@ const Query = {
     return albumQuery;
   },
   albums: async (parent, { search, last = 5 }, ctx, info) => {
+    if (!ctx.req.userId) {
+      throw new Error('You need to login to see your recently added albums');
+    }
     if (!search) {
       return Album.find({})
         .hint({ $natural: -1 })
