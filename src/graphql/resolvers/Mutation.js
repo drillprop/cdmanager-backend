@@ -27,6 +27,10 @@ const Mutation = {
     const { name, email, avatar } = args;
     const password = await bcrypt.hash(args.password, 10);
     const user = await new User({ name, password, email, avatar });
+    // check if user already exist
+    const userExist = await User.findOne({ name });
+    const emailExist = await User.findOne({ email });
+    if (userExist || emailExist) throw new Error('User or email already exist');
     user.save();
     const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     // set cookie with token
