@@ -25,12 +25,12 @@ const Query = {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
-    const user = await User.findById(ctx.req.userId);
     if (!search) {
-      if (user.albums.length > last) {
-        return user.albums.splice(user.albums.length - last, last).reverse();
-      }
-      return user.albums.reverse();
+      const getAlbums = await User.findById(ctx.req.userId, {
+        albums: { $slice: -last }
+      });
+      const lastAlbums = await getAlbums.albums;
+      return lastAlbums.reverse();
     }
     return Album.find(
       { $text: { $search: search } },
