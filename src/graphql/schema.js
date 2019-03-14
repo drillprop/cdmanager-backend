@@ -19,6 +19,7 @@ const typeDefs = gql`
     signin(email: String!, password: String!): User
     signout: SuccessMessage
     createCd(title: String!, artist: String!, image: String, id: String): Album
+    deleteCd(id: String!): SuccessMessage
   }
   type User {
     name: String!

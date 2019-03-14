@@ -23,6 +23,14 @@ const Mutation = {
 
     return album;
   },
+  deleteCd: async (parent, { id }, ctx, info) => {
+    // select album
+    const album = await User.findById(ctx.req.userId, {
+      albums: { $elemMatch: { _id: id } }
+    });
+    console.log(album);
+    return { message: 'succes' };
+  },
   signup: async (parent, args, ctx, info) => {
     const { name, email, avatar } = args;
     const password = await bcrypt.hash(args.password, 10);
