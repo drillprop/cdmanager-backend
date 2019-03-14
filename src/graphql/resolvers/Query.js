@@ -21,14 +21,14 @@ const Query = {
     });
     return albumQuery;
   },
-  albums: async (parent, { search, last = 5 }, ctx, info) => {
+  albums: async (parent, { search, last = 4 }, ctx, info) => {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
     const user = await User.findById(ctx.req.userId);
     if (!search) {
-      if (user.albums.length > 4) {
-        return user.albums.splice(user.albums.length - 4, 4).reverse();
+      if (user.albums.length > last) {
+        return user.albums.splice(user.albums.length - last, last).reverse();
       }
       return user.albums.reverse();
     }
