@@ -10,16 +10,21 @@ const typeDefs = gql`
     me: User
   }
   type Mutation {
-    signup(
+    register(
       name: String!
       email: String!
       password: String!
       avatar: String
     ): User
-    signin(email: String!, password: String!): User
+    login(email: String!, password: String!): User
     signout: SuccessMessage
-    createCd(title: String!, artist: String!, image: String, id: String): Album
-    deleteCd(id: String!): SuccessMessage
+    createAlbum(
+      title: String!
+      artist: String!
+      image: String
+      id: String
+    ): Album
+    deleteAlbum(id: String!): SuccessMessage
   }
   type User {
     name: String!

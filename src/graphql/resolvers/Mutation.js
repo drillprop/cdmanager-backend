@@ -5,7 +5,7 @@ import Album from '../../models/Album';
 import User from '../../models/User';
 
 const Mutation = {
-  createCd: async (parent, { title, artist, image }, ctx, info) => {
+  createAlbum: async (parent, { title, artist, image }, ctx, info) => {
     const user = await User.findById(ctx.req.userId);
     if (!user) throw new Error('Sign in to add a cd');
     const double = await User.findById(ctx.req.userId).elemMatch('albums', {
@@ -24,13 +24,13 @@ const Mutation = {
     await user.save();
     return album;
   },
-  deleteCd: async (parent, { id }, ctx, info) => {
+  deleteAlbum: async (parent, { id }, ctx, info) => {
     const user = await User.findById(ctx.req.userId);
     user.albums.id(id).remove();
     user.save();
     return { message: 'succes' };
   },
-  signup: async (parent, args, ctx, info) => {
+  register: async (parent, args, ctx, info) => {
     const { name, email, avatar } = args;
     const password = await bcrypt.hash(args.password, 10);
     const user = await new User({ name, password, email, avatar });
@@ -47,7 +47,7 @@ const Mutation = {
     });
     return user;
   },
-  signin: async (parent, args, ctx, info) => {
+  login: async (parent, args, ctx, info) => {
     const { email, password } = args;
     const user = await User.findOne({ email });
     if (!user) {
