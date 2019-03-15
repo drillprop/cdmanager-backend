@@ -5,13 +5,15 @@ import Album from '../../models/Album';
 import User from '../../models/User';
 
 const Mutation = {
-  createCd: async (parent, args, ctx, info) => {
+  createCd: async (parent, { title, artist, image }, ctx, info) => {
     const user = await User.findById(ctx.req.userId);
-    if (!user) {
-      throw new Error('Sign in to add a cd');
-    }
-    let { title, artist, image } = args;
-    console.log(user._id);
+    if (!user) throw new Error('Sign in to add a cd');
+    const double = await User.findById(ctx.req.userId).elemMatch('albums', {
+      title,
+      artist,
+      image
+    });
+    if (double) throw new Error('You already have this album');
     const album = new Album({
       title,
       artist,
@@ -20,7 +22,6 @@ const Mutation = {
     await album.save();
     await user.albums.push(album);
     await user.save();
-
     return album;
   },
   deleteCd: async (parent, { id }, ctx, info) => {
