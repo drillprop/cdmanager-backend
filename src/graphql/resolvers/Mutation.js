@@ -21,13 +21,13 @@ const Mutation = {
     });
     await album.save();
     await user.albums.push(album);
-    await user.save();
+    user.save();
     return album;
   },
   deleteAlbum: async (parent, { id }, ctx, info) => {
     const user = await User.findById(ctx.req.userId);
-    user.albums.id(id).remove();
-    user.save();
+    await user.albums.id(id).remove();
+    await user.save();
     return { message: 'succes' };
   },
   register: async (parent, args, ctx, info) => {
@@ -38,7 +38,7 @@ const Mutation = {
     const userExist = await User.findOne({ name });
     const emailExist = await User.findOne({ email });
     if (userExist || emailExist) throw new Error('User or email already exist');
-    user.save();
+    await user.save();
     const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     // set cookie with token
     ctx.res.cookie('token', token, {
