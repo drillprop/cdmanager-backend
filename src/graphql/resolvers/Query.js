@@ -12,7 +12,7 @@ const Query = {
     const res = await fetch(baseUrl);
     const json = await res.json();
     const album = await json.results.albummatches.album;
-    const albumQuery = album.map(item => {
+    const albumQuery = await album.map(item => {
       return {
         title: item.name,
         artist: item.artist,
@@ -21,21 +21,16 @@ const Query = {
     });
     return albumQuery;
   },
-  albums: async (parent, { search, last = 4 }, ctx, info) => {
+  albums: async (parent, { last = 4 }, ctx, info) => {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
-    if (!search) {
-      const getAlbums = await User.findById(ctx.req.userId, {
-        albums: { $slice: -last }
-      });
-      const lastAlbums = await getAlbums.albums;
-      return lastAlbums.reverse();
-    }
-    return Album.find(
-      { $text: { $search: search } },
-      { score: { $meta: 'textScore' } }
-    ).sort({ score: { $meta: 'textScore' } });
+    const getAlbums = await User.findById(ctx.req.userId, {
+      albums: { $slice: -last }
+    });
+    const lastAlbums = await getAlbums.albums;
+    const albums = lastAlbums.reverse();
+    return albums;
   },
   me: async (parent, args, ctx, info) => {
     if (!ctx.req.userId) {
