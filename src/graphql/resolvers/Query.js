@@ -21,6 +21,11 @@ const Query = {
     });
     return albumQuery;
   },
+  albumsLength: async (parent, args, ctx, info) => {
+    const user = await User.findById(ctx.req.userId);
+    const length = user.albums.length;
+    return length;
+  },
   albums: async (parent, { last = 10 }, ctx, info) => {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');

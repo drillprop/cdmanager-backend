@@ -7,6 +7,7 @@ const typeDefs = gql`
   type Query {
     albumslastfm(search: String!): [Album]
     albums(last: Int): [Album]
+    albumsLength: Int
     me: User
   }
   type Mutation {
