@@ -21,12 +21,12 @@ const Query = {
     });
     return albumQuery;
   },
-  albums: async (parent, { last = 4 }, ctx, info) => {
+  albums: async (parent, { last = 10 }, ctx, info) => {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
     const getAlbums = await User.findById(ctx.req.userId, {
-      albums: { $slice: -last }
+      albums: { $slice: [-last, 10] }
     });
     const lastAlbums = await getAlbums.albums;
     const albums = lastAlbums.reverse();
