@@ -22,8 +22,8 @@ const Query = {
     return albumQuery;
   },
   albumsLength: async (parent, args, ctx, info) => {
-    const user = await User.findById(ctx.req.userId);
-    const length = user.albums.length;
+    const getAlbums = await User.findById(ctx.req.userId).select('albums');
+    const { length } = getAlbums.albums;
     return length;
   },
   albums: async (parent, { last = 10 }, ctx, info) => {
