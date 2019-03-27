@@ -34,6 +34,7 @@ const Query = {
     const { length } = dbAlbums.albums;
     const lastBiggerThanLength = last > length;
     const rest = length % 10;
+    if (last - 10 > length) throw Error('no such page');
     const getAlbums = await User.findById(ctx.req.userId, {
       albums: { $slice: lastBiggerThanLength ? rest : [-last, 10] }
     });
