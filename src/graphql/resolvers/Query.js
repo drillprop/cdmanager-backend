@@ -21,6 +21,20 @@ const Query = {
     });
     return albumQuery;
   },
+  albumsCollection: async (parent, { search }, ctx, info) => {
+    const user = await User.findById(ctx.req.userId);
+
+    const albums = await user.albums.filter(album => {
+      let { title, artist } = album;
+      title = title.toLowerCase();
+      artist = artist.toLowerCase();
+      const find = search.toLowerCase();
+      if (title.includes(find) || artist.includes(find)) {
+        return album;
+      }
+    });
+    return albums;
+  },
   albumsLength: async (parent, args, ctx, info) => {
     const getAlbums = await User.findById(ctx.req.userId).select('albums');
     const { length } = getAlbums.albums;
