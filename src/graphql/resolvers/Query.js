@@ -21,7 +21,7 @@ const Query = {
     });
     return albumQuery;
   },
-  albumsCollection: async (parent, { search }, ctx, info) => {
+  filterCollection: async (parent, { search }, ctx, info) => {
     const user = await User.findById(ctx.req.userId);
 
     const albums = await user.albums.filter(album => {
