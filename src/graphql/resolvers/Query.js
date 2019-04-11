@@ -21,40 +21,43 @@ const Query = {
     });
     return albumQuery;
   },
-  filterCollection: async (parent, { search }, ctx, info) => {
-    const user = await User.findById(ctx.req.userId);
 
-    const albums = await user.albums.filter(album => {
-      let { title, artist } = album;
-      title = title.toLowerCase();
-      artist = artist.toLowerCase();
-      const find = search.toLowerCase();
-      if (title.includes(find) || artist.includes(find)) {
-        return album;
-      }
-    });
-    return albums;
-  },
   albumsLength: async (parent, args, ctx, info) => {
     const getAlbums = await User.findById(ctx.req.userId).select('albums');
     const { length } = getAlbums.albums;
     return length;
   },
-  albums: async (parent, { last = 10 }, ctx, info) => {
+  albums: async (parent, { last = 10, search }, ctx, info) => {
+    // if user is not logged in throw error
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
+    // get albums from db
     const dbAlbums = await User.findById(ctx.req.userId).select('albums');
+    // get length of albums
     const { length } = dbAlbums.albums;
     const lastBiggerThanLength = last > length;
     const rest = length % 10;
     if (last - 10 > length) throw Error('no such page');
+    // show last 10 albums
     const getAlbums = await User.findById(ctx.req.userId, {
       albums: { $slice: lastBiggerThanLength ? rest : [-last, 10] }
     });
     const lastAlbums = await getAlbums.albums;
-    const albums = lastAlbums.reverse();
-    return albums;
+    const lastTenAlbums = lastAlbums.reverse();
+
+    const searchAlbums =
+      search &&
+      (await dbAlbums.albums.filter(album => {
+        let { title, artist } = album;
+        title = title.toLowerCase();
+        artist = artist.toLowerCase();
+        const find = search.toLowerCase();
+        if (title.includes(find) || artist.includes(find)) {
+          return album;
+        }
+      }));
+    return searchAlbums ? searchAlbums : lastTenAlbums;
   },
   me: async (parent, args, ctx, info) => {
     if (!ctx.req.userId) {
