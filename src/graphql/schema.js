@@ -6,8 +6,7 @@ const typeDefs = gql`
   }
   type Query {
     albumslastfm(search: String!): [Album]
-    filterCollection(search: String!): [Album]
-    albums(last: Int): [Album]
+    albums(last: Int, search: String): [Album]
     albumsLength: Int
     me: User
   }
