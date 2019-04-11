@@ -68,3 +68,12 @@ const Query = {
 };
 
 export default Query;
+
+// const getAlbums = await User.findById(ctx.req.userId, {
+//     albums: {
+//       $elemMatch: {
+//         title: 'Undertow'
+//       }
+
+//     }
+// }
