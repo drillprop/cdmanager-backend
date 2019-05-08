@@ -2,6 +2,7 @@ import 'dotenv/config';
 import fetch from 'node-fetch';
 import Album from '../../models/Album';
 import User from '../../models/User';
+import { Types } from 'mongoose';
 
 const Query = {
   albumslastfm: async (parent, args, ctx, info) => {
@@ -63,6 +64,22 @@ const Query = {
     if (!ctx.req.userId) {
       return null;
     }
+    // get first ten album
+    const firstTenAlbum = await User.aggregate([
+      { $match: { _id: Types.ObjectId(ctx.req.userId) } },
+      { $unwind: '$albums' },
+      { $skip: 0 },
+      { $limit: 10 },
+      { $group: { _id: null, albums: { $push: '$albums' } } },
+      { $project: { _id: 0 } }
+    ]);
+    console.log(firstTenAlbum[0]);
+
+    const searchedAlbums = await User.aggregate([
+      { $match: { _id: Types.ObjectId(ctx.req.userId) } },
+      { $group: { _id: null, albums: { $push: '$albums' } } }
+    ]);
+    console.log(searchedAlbums);
     return User.findById(ctx.req.userId);
   }
 };
