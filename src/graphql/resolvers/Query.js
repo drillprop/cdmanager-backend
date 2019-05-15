@@ -76,39 +76,3 @@ const Query = {
 };
 
 export default Query;
-
-// const getAlbums = await User.findById(ctx.req.userId, {
-//     albums: {
-//       $elemMatch: {
-//         title: 'Undertow'
-//       }
-
-//     }
-// }
-
-// get albums from db
-// const dbAlbums = await User.findById(ctx.req.userId).select('albums');
-// // get length of albums
-// const { length } = dbAlbums.albums;
-// const lastBiggerThanLength = last > length;
-// const rest = length % 10;
-// if (last - 10 > length) throw Error('no such page');
-// // show last 10 albums
-// const getAlbums = await User.findById(ctx.req.userId, {
-//   albums: { $slice: lastBiggerThanLength ? rest : [-last, 10] }
-// });
-// const lastAlbums = await getAlbums.albums;
-// const lastTenAlbums = lastAlbums.reverse();
-
-// const searchAlbums =
-//   search &&
-//   (await dbAlbums.albums.filter(album => {
-//     let { title, artist } = album;
-//     title = title.toLowerCase();
-//     artist = artist.toLowerCase();
-//     const find = search.toLowerCase();
-//     if (title.includes(find) || artist.includes(find)) {
-//       return album;
-//     }
-//   }));
-// return searchAlbums ? searchAlbums : lastTenAlbums;
