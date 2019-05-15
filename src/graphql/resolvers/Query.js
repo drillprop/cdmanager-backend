@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import fetch from 'node-fetch';
-import Album from '../../models/Album';
 import User from '../../models/User';
 import { Types } from 'mongoose';
 
@@ -28,71 +27,29 @@ const Query = {
     const { length } = getAlbums.albums;
     return length;
   },
-  albums: async (parent, { last = 10, search }, ctx, info) => {
-    // if user is not logged in throw error
+  albums: async (parent, { last = 0, search }, ctx, info) => {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
-    // get albums from db
-    const dbAlbums = await User.findById(ctx.req.userId).select('albums');
-    // get length of albums
-    const { length } = dbAlbums.albums;
-    const lastBiggerThanLength = last > length;
-    const rest = length % 10;
-    if (last - 10 > length) throw Error('no such page');
-    // show last 10 albums
-    const getAlbums = await User.findById(ctx.req.userId, {
-      albums: { $slice: lastBiggerThanLength ? rest : [-last, 10] }
-    });
-    const lastAlbums = await getAlbums.albums;
-    const lastTenAlbums = lastAlbums.reverse();
-
-    const searchAlbums =
-      search &&
-      (await dbAlbums.albums.filter(album => {
-        let { title, artist } = album;
-        title = title.toLowerCase();
-        artist = artist.toLowerCase();
-        const find = search.toLowerCase();
-        if (title.includes(find) || artist.includes(find)) {
-          return album;
-        }
-      }));
-    return searchAlbums ? searchAlbums : lastTenAlbums;
-  },
-  me: async (parent, args, ctx, info) => {
-    if (!ctx.req.userId) {
-      return null;
-    }
-    // get first ten album
-    const firstTenAlbum = await User.aggregate([
-      { $match: { _id: Types.ObjectId(ctx.req.userId) } },
-      { $unwind: '$albums' },
-      { $skip: 0 },
-      { $limit: 10 },
-      { $group: { _id: null, albums: { $push: '$albums' } } },
-      { $project: { _id: 0 } }
-    ]);
-    // console.log(firstTenAlbum[0]);
-    const value = false;
 
     const searchedAlbums = await User.aggregate([
       { $match: { _id: Types.ObjectId(ctx.req.userId) } },
       { $unwind: '$albums' },
       { $project: { date: 0, email: 0, name: 0, password: 0, _id: 0, __v: 0 } },
-      value
+      { $sort: { 'albums._id': -1 } },
+      search
         ? {
             $match: {
               $or: [
-                { 'albums.artist': 'Black Sabbath' },
-                { 'albums.title': 'Black Sabbath' }
+                { 'albums.artist': { $regex: search, $options: 'i' } },
+                { 'albums.title': { $regex: search, $options: 'i' } }
               ]
             }
           }
         : {
             $project: { date: 0 }
           },
-      { $skip: 0 },
+      { $skip: last },
       { $limit: 10 },
       {
         $group: {
@@ -101,16 +58,19 @@ const Query = {
         }
       }
     ]);
-    console.log(searchedAlbums);
 
-    const aaalbums = searchedAlbums[0].albums.map(album => {
+    const albums = searchedAlbums[0].albums.map(album => {
       return {
         ...album,
-        _id: album._id.toString()
+        id: album._id.toString()
       };
     });
-    console.log(aaalbums);
-
+    return albums;
+  },
+  me: async (parent, args, ctx, info) => {
+    if (!ctx.req.userId) {
+      return null;
+    }
     return User.findById(ctx.req.userId);
   }
 };
@@ -125,3 +85,30 @@ export default Query;
 
 //     }
 // }
+
+// get albums from db
+// const dbAlbums = await User.findById(ctx.req.userId).select('albums');
+// // get length of albums
+// const { length } = dbAlbums.albums;
+// const lastBiggerThanLength = last > length;
+// const rest = length % 10;
+// if (last - 10 > length) throw Error('no such page');
+// // show last 10 albums
+// const getAlbums = await User.findById(ctx.req.userId, {
+//   albums: { $slice: lastBiggerThanLength ? rest : [-last, 10] }
+// });
+// const lastAlbums = await getAlbums.albums;
+// const lastTenAlbums = lastAlbums.reverse();
+
+// const searchAlbums =
+//   search &&
+//   (await dbAlbums.albums.filter(album => {
+//     let { title, artist } = album;
+//     title = title.toLowerCase();
+//     artist = artist.toLowerCase();
+//     const find = search.toLowerCase();
+//     if (title.includes(find) || artist.includes(find)) {
+//       return album;
+//     }
+//   }));
+// return searchAlbums ? searchAlbums : lastTenAlbums;
