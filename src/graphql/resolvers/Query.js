@@ -74,19 +74,24 @@ const Query = {
       { $project: { _id: 0 } }
     ]);
     // console.log(firstTenAlbum[0]);
+    const value = false;
 
     const searchedAlbums = await User.aggregate([
       { $match: { _id: Types.ObjectId(ctx.req.userId) } },
       { $unwind: '$albums' },
       { $project: { date: 0, email: 0, name: 0, password: 0, _id: 0, __v: 0 } },
-      {
-        $match: {
-          $or: [
-            { 'albums.artist': 'Black Sabbath' },
-            { 'albums.title': 'Black Gives Way to Blue' }
-          ]
-        }
-      },
+      value
+        ? {
+            $match: {
+              $or: [
+                { 'albums.artist': 'Black Sabbath' },
+                { 'albums.title': 'Black Sabbath' }
+              ]
+            }
+          }
+        : {
+            $project: { date: 0 }
+          },
       { $skip: 0 },
       { $limit: 10 },
       {
@@ -96,6 +101,7 @@ const Query = {
         }
       }
     ]);
+    console.log(searchedAlbums);
 
     const aaalbums = searchedAlbums[0].albums.map(album => {
       return {
