@@ -88,7 +88,7 @@ const Query = {
         }
       },
       { $skip: 0 },
-      { $limit: 20 },
+      { $limit: 10 },
       {
         $group: {
           _id: null,
@@ -96,7 +96,15 @@ const Query = {
         }
       }
     ]);
-    console.log(searchedAlbums);
+
+    const aaalbums = searchedAlbums[0].albums.map(album => {
+      return {
+        ...album,
+        _id: album._id.toString()
+      };
+    });
+    console.log(aaalbums);
+
     return User.findById(ctx.req.userId);
   }
 };
