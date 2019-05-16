@@ -27,7 +27,7 @@ const Query = {
     const { length } = getAlbums.albums;
     return length;
   },
-  albums: async (parent, { last = 0, limit = 10, search }, ctx, info) => {
+  albums: async (parent, { skip = 0, limit = 10, search }, ctx, info) => {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
@@ -48,7 +48,7 @@ const Query = {
         : {
             $project: { date: 0 }
           },
-      { $skip: last },
+      { $skip: skip },
       { $limit: limit },
       {
         $group: {
