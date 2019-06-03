@@ -27,7 +27,7 @@ const Query = {
     const { length } = getAlbums.albums;
     return length;
   },
-  albums: async (parent, { skip = 0, limit = 10, search }, ctx, info) => {
+  albums: async (parent, { skip = 0, limit = 10, search = '' }, ctx, info) => {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
@@ -36,18 +36,24 @@ const Query = {
       { $unwind: '$albums' },
       { $project: { date: 0, email: 0, name: 0, password: 0, _id: 0, __v: 0 } },
       { $sort: { 'albums._id': -1 } },
-      search
-        ? {
-            $match: {
-              $or: [
-                { 'albums.artist': { $regex: search, $options: 'i' } },
-                { 'albums.title': { $regex: search, $options: 'i' } }
-              ]
+      {
+        $match: {
+          $or: [
+            {
+              'albums.artist': {
+                $regex: search,
+                $options: 'i'
+              }
+            },
+            {
+              'albums.title': {
+                $regex: search,
+                $options: 'i'
+              }
             }
-          }
-        : {
-            $project: { date: 0 }
-          },
+          ]
+        }
+      },
       { $skip: skip },
       { $limit: limit },
       {
