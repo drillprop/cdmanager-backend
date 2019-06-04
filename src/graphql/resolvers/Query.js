@@ -33,8 +33,23 @@ const Query = {
     }
     const searchedAlbums = await User.aggregate([
       { $match: { _id: Types.ObjectId(ctx.req.userId) } },
+      {
+        $project: {
+          albums: 1,
+          albumsTotal: { $size: '$albums' }
+        }
+      },
       { $unwind: '$albums' },
-      { $project: { date: 0, email: 0, name: 0, password: 0, _id: 0, __v: 0 } },
+      {
+        $project: {
+          date: 0,
+          email: 0,
+          name: 0,
+          password: 0,
+          _id: 0,
+          __v: 0
+        }
+      },
       { $sort: { 'albums._id': -1 } },
       {
         $match: {
@@ -59,10 +74,12 @@ const Query = {
       {
         $group: {
           _id: null,
-          albums: { $push: '$albums' }
+          albums: { $push: '$albums' },
+          total: { $addToSet: '$albumsTotal' }
         }
       }
     ]);
+    console.log(searchedAlbums);
 
     const albums = searchedAlbums[0].albums.map(album => {
       return {
@@ -70,7 +87,13 @@ const Query = {
         id: album._id.toString()
       };
     });
-    return albums;
+    console.log(albums);
+    const total = searchedAlbums[0].total[0];
+    console.log(total);
+    return {
+      albums,
+      total
+    };
   },
   me: async (parent, args, ctx, info) => {
     if (!ctx.req.userId) {

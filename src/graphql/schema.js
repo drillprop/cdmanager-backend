@@ -1,12 +1,16 @@
 import { gql } from 'apollo-server-express';
 
 const typeDefs = gql`
+  type Albums {
+    total: Int
+    albums: [Album]
+  }
   type SuccessMessage {
     message: String
   }
   type Query {
     albumslastfm(search: String!): [Album]
-    albums(skip: Int, limit: Int, search: String): [Album]
+    albums(skip: Int, limit: Int, search: String): Albums
     albumsLength: Int
     me: User
   }
