@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import fetch from 'node-fetch';
 import User from '../../models/User';
-import { Types } from 'mongoose';
+import { albumSearch, albumBrowse, reduceToObject } from './agregateFunctions';
 
 const Query = {
   albumslastfm: async (parent, args, ctx, info) => {
@@ -26,69 +26,15 @@ const Query = {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
-    const searchedAlbums = await User.aggregate([
-      { $match: { _id: Types.ObjectId(ctx.req.userId) } },
-      {
-        $project: {
-          albums: 1,
-          albumsTotal: { $size: '$albums' }
-        }
-      },
-      { $unwind: '$albums' },
-      {
-        $project: {
-          date: 0,
-          email: 0,
-          name: 0,
-          password: 0,
-          _id: 0,
-          __v: 0
-        }
-      },
-      { $sort: { 'albums._id': -1 } },
-      {
-        $match: {
-          $or: [
-            {
-              'albums.artist': {
-                $regex: search,
-                $options: 'i'
-              }
-            },
-            {
-              'albums.title': {
-                $regex: search,
-                $options: 'i'
-              }
-            }
-          ]
-        }
-      },
-      { $skip: skip },
-      { $limit: limit },
-      {
-        $group: {
-          _id: null,
-          albums: { $push: '$albums' },
-          total: { $addToSet: '$albumsTotal' }
-        }
-      }
-    ]);
-    console.log(searchedAlbums);
+    const searchedAlbums = await User.aggregate(
+      albumSearch(ctx.req.userId, skip, limit, search)
+    );
+    const browsedAlbums = await User.aggregate(
+      albumBrowse(ctx.req.userId, skip, limit)
+    );
 
-    const albums = searchedAlbums[0].albums.map(album => {
-      return {
-        ...album,
-        id: album._id.toString()
-      };
-    });
-    console.log(albums);
-    const total = searchedAlbums[0].total[0];
-    console.log(total);
-    return {
-      albums,
-      total
-    };
+    if (search) return reduceToObjectt(searchedAlbums);
+    else return reduceToObject(browsedAlbums);
   },
   me: async (parent, args, ctx, info) => {
     if (!ctx.req.userId) {
