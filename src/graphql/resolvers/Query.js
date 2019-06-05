@@ -22,12 +22,7 @@ const Query = {
     return albumQuery;
   },
 
-  albumsLength: async (parent, args, ctx, info) => {
-    const getAlbums = await User.findById(ctx.req.userId).select('albums');
-    const { length } = getAlbums.albums;
-    return length;
-  },
-  albums: async (parent, { skip = 0, limit = 10, search = '' }, ctx, info) => {
+  albums: async (parent, { skip = 0, limit = 10, search = '' }, ctx) => {
     if (!ctx.req.userId) {
       throw new Error('You need to login to see your recently added albums');
     }
