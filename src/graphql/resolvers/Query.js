@@ -27,12 +27,11 @@ const Query = {
       throw new Error('You need to login to see your recently added albums');
     }
     const searchedAlbums = await User.aggregate(
-      albumSearch(ctx.req.userId, skip, limit, search)
+      albumSearch(ctx.req.userId, search)
     );
     const browsedAlbums = await User.aggregate(
       albumBrowse(ctx.req.userId, skip, limit)
     );
-
     if (search) return reduceToObject(searchedAlbums);
     else return reduceToObject(browsedAlbums);
   },
