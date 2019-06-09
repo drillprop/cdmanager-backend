@@ -33,7 +33,7 @@ const Query = {
       albumBrowse(ctx.req.userId, skip, limit)
     );
 
-    if (search) return reduceToObjectt(searchedAlbums);
+    if (search) return reduceToObject(searchedAlbums);
     else return reduceToObject(browsedAlbums);
   },
   me: async (parent, args, ctx, info) => {
