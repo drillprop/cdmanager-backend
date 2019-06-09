@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 
 export const reduceToObject = aggregateResult => {
+  if (!aggregateResult.length) throw new Error('No albums found');
   const albums = aggregateResult[0].albums.map(album => ({
     ...album,
     id: album._id.toString()
@@ -12,7 +13,7 @@ export const reduceToObject = aggregateResult => {
   };
 };
 
-export const albumSearch = (userId, skip, limit, search) => {
+export const albumSearch = (userId, search) => {
   return [
     { $match: { _id: Types.ObjectId(userId) } },
     {
@@ -51,8 +52,6 @@ export const albumSearch = (userId, skip, limit, search) => {
         ]
       }
     },
-    { $skip: skip },
-    { $limit: limit },
     {
       $group: {
         _id: null,
