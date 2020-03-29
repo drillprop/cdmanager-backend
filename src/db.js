@@ -1,7 +1,10 @@
 import mongoose from 'mongoose';
 import 'dotenv/config';
 
-mongoose.connect(process.env.MONGODB_PATH, { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_PATH, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 mongoose.set('useCreateIndex', true);
 
 const db = mongoose.connection;
