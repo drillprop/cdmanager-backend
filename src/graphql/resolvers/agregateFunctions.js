@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
 
 export const reduceToObject = aggregateResult => {
-  if (!aggregateResult.length) throw new Error('No albums found');
-  console.log(aggregateResult);
-  const albums = aggregateResult[0].albums.map(album => ({
-    ...album,
-    id: album._id.toString()
-  }));
-  const total = aggregateResult[0].total[0];
+  const albums = aggregateResult.length
+    ? aggregateResult[0].albums.map(album => ({
+        ...album,
+        id: album._id.toString()
+      }))
+    : [];
+  const total = aggregateResult.length ? aggregateResult[0].total[0] : 0;
   return {
     albums,
     total
