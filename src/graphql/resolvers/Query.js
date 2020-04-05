@@ -6,17 +6,15 @@ import { albumSearch, albumBrowse, reduceToObject } from './agregateFunctions';
 const Query = {
   albumslastfm: async (parent, args, ctx, info) => {
     const { search } = args;
-    let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${search}&api_key=${
-      process.env.LASTFM_API_KEY
-    }&format=json`;
+    let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${search}&api_key=${process.env.LASTFM_API_KEY}&limit=15&format=json`;
     const res = await fetch(baseUrl);
     const json = await res.json();
     const album = await json.results.albummatches.album;
-    const albumQuery = await album.map(item => {
+    const albumQuery = await album.map((item) => {
       return {
         title: item.name,
         artist: item.artist,
-        image: item.image[2]['#text']
+        image: item.image[2]['#text'],
       };
     });
     return albumQuery;
@@ -40,7 +38,7 @@ const Query = {
       return null;
     }
     return User.findById(ctx.req.userId);
-  }
+  },
 };
 
 export default Query;
