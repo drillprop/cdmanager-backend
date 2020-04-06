@@ -12,13 +12,13 @@ const Mutation = {
       const double = await User.findById(ctx.req.userId).elemMatch('albums', {
         title,
         artist,
-        image
+        image,
       });
       if (double) throw new Error('You already have this album');
       const album = new Album({
         title,
         artist,
-        image
+        image,
       });
       await album.save();
       await user.albums.push(album);
@@ -53,7 +53,7 @@ const Mutation = {
       // set cookie with token
       ctx.res.cookie('token', token, {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 365
+        maxAge: 1000 * 60 * 60 * 24 * 365,
       });
       return user;
     } catch (error) {
@@ -75,7 +75,7 @@ const Mutation = {
       // set cookie with token
       ctx.res.cookie('token', token, {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 365
+        maxAge: 1000 * 60 * 60 * 24 * 365,
       });
       return user;
     } catch (error) {
@@ -85,7 +85,7 @@ const Mutation = {
   signout: (parent, args, ctx, info) => {
     ctx.res.clearCookie('token');
     return { message: 'succes' };
-  }
+  },
 };
 
 export default Mutation;

@@ -5,14 +5,40 @@ const typeDefs = gql`
     total: Int
     albums: [Album]
   }
+
   type SuccessMessage {
     message: String
   }
+
+  type User {
+    name: String!
+    email: String!
+    password: String!
+    avatar: String
+    id: String!
+    albums: [Album]
+  }
+
+  type Album {
+    id: String!
+    title: String!
+    artist: String!
+    image: String
+  }
+
+  type FetchedAlbum {
+    artist: String!
+    title: String!
+    imageLarge: String
+    imageSmall: String
+  }
+
   type Query {
-    albumslastfm(search: String!): [Album]
+    albumslastfm(search: String!): [FetchedAlbum]
     albums(skip: Int, limit: Int, search: String): Albums
     me: User
   }
+
   type Mutation {
     register(
       name: String!
@@ -29,20 +55,6 @@ const typeDefs = gql`
       id: String
     ): Album
     deleteAlbum(id: String!): SuccessMessage
-  }
-  type User {
-    name: String!
-    email: String!
-    password: String!
-    avatar: String
-    id: String!
-    albums: [Album]
-  }
-  type Album {
-    title: String!
-    artist: String!
-    image: String
-    id: String
   }
 `;
 

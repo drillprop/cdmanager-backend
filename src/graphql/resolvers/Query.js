@@ -14,7 +14,8 @@ const Query = {
       return {
         title: item.name,
         artist: item.artist,
-        image: item.image[2]['#text'],
+        imageSmall: item.image[1]['#text'],
+        imageLarge: item.image[2]['#text'],
       };
     });
     return albumQuery;
