@@ -8,21 +8,42 @@ const Mutation = {
   createAlbum: async (parent, { title, artist, image }, ctx, info) => {
     try {
       const user = await User.findById(ctx.req.userId);
-      if (!user) throw new Error('Sign in to add a cd');
-      const double = await User.findById(ctx.req.userId).elemMatch('albums', {
+      if (!user) throw Error('Sign in to add a cd');
+
+      // check if album exists in db
+      let album = await Album.findOne({
         title,
         artist,
         image,
       });
-      if (double) throw new Error('You already have this album');
-      const album = new Album({
-        title,
-        artist,
-        image,
-      });
-      await album.save();
-      await user.albums.push(album);
-      user.save();
+
+      // if album not exist in db, create new one
+      if (!album) {
+        album = await Album.create({
+          title,
+          artist,
+          image,
+        }).catch((err) => {
+          throw Error(err);
+        });
+      }
+
+      // update that album by setting owners
+      await album.updateOne(
+        { $push: { owners: user.id } },
+        { new: true, useFindAndModify: false }
+      );
+
+      // update user by adding album to user's albums
+      await user
+        .updateOne(
+          { $push: { albums: album.id } },
+          { new: true, useFindAndModify: false }
+        )
+        .catch((err) => {
+          throw Error(err);
+        });
+
       return album;
     } catch (error) {
       throw Error(error);
@@ -89,3 +110,11 @@ const Mutation = {
 };
 
 export default Mutation;
+
+// check if user have that album
+// const double = await User.findById(ctx.req.userId).elemMatch('albums', {
+//   title,
+//   artist,
+//   image,
+// });
+// if (double) throw Error('You already have this album');
