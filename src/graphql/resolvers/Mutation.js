@@ -17,6 +17,14 @@ const Mutation = {
         image,
       });
 
+      // throw error if user has already created album
+      if (album) {
+        const hasAlbum = await User.findById(ctx.req.userId).where({
+          albums: { $eq: album.id },
+        });
+        if (hasAlbum) throw Error('You already have that album');
+      }
+
       // if album not exist in db, create new one
       if (!album) {
         album = await Album.create({
