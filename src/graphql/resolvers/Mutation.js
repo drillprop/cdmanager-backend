@@ -29,20 +29,10 @@ const Mutation = {
       }
 
       // update that album by setting owners
-      await album.updateOne(
-        { $push: { owners: user.id } },
-        { new: true, useFindAndModify: false }
-      );
+      await album.updateOne({ $addToSet: { owners: user.id } });
 
       // update user by adding album to user's albums
-      await user
-        .updateOne(
-          { $push: { albums: album.id } },
-          { new: true, useFindAndModify: false }
-        )
-        .catch((err) => {
-          throw Error(err);
-        });
+      await user.updateOne({ $addToSet: { albums: album.id } });
 
       return album;
     } catch (error) {
@@ -117,4 +107,3 @@ export default Mutation;
 //   artist,
 //   image,
 // });
-// if (double) throw Error('You already have this album');
