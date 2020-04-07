@@ -1,13 +1,15 @@
 import { model, Schema } from 'mongoose';
-import { albumSchema } from './Album';
 
 const userSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
-  date: { type: Date, default: Date.now },
-  avatar: String,
-  albums: [albumSchema]
+  albums: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Album',
+    },
+  ],
 });
 
 const User = model('Users', userSchema);
