@@ -50,7 +50,7 @@ const Mutation = {
   deleteAlbum: async (parent, { id }, ctx, info) => {
     try {
       const user = await User.findById(ctx.req.userId);
-      await user.albums.id(id).remove();
+      await user.albums.remove(id);
       await user.save();
       return { message: 'succes' };
     } catch (error) {
