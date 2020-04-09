@@ -20,7 +20,7 @@ const Mutation = {
       // throw error if user has already created album
       if (album) {
         const hasAlbum = await User.findById(ctx.req.userId).where({
-          albums: { $eq: album.id },
+          'albums.album': { $eq: album.id },
         });
         if (hasAlbum) throw Error('You already have that album');
       }
@@ -40,7 +40,14 @@ const Mutation = {
       await album.updateOne({ $addToSet: { owners: user.id } });
 
       // update user by adding album to user's albums
-      await user.updateOne({ $addToSet: { albums: album.id } });
+      await user.updateOne({
+        $push: {
+          albums: {
+            album: album.id,
+            rating: 0,
+          },
+        },
+      });
 
       return album;
     } catch (error) {
