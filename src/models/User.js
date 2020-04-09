@@ -6,8 +6,11 @@ const userSchema = new Schema({
   password: { type: String, required: true },
   albums: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'Album',
+      album: {
+        type: Schema.Types.ObjectId,
+        ref: 'Album',
+      },
+      rating: { type: Number },
     },
   ],
 });
