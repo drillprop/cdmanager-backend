@@ -115,10 +115,3 @@ const Mutation = {
 };
 
 export default Mutation;
-
-// check if user have that album
-// const double = await User.findById(ctx.req.userId).elemMatch('albums', {
-//   title,
-//   artist,
-//   image,
-// });
