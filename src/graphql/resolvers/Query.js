@@ -2,6 +2,7 @@ import 'dotenv/config';
 import fetch from 'node-fetch';
 import User from '../../models/User';
 import albumBrowse from '../../utils/albumBrowse';
+import albumSearch from '../../utils/albumSearch';
 
 const Query = {
   albumslastfm: async (parent, args, ctx, info) => {
@@ -30,7 +31,9 @@ const Query = {
       throw Error('You need to login to see your recently added albums');
 
     const total = user.albums.length;
-    const albums = albumBrowse(ctx.req.userId, skip, limit);
+    const albums = search
+      ? await albumSearch(ctx.req.userId, search)
+      : await albumBrowse(ctx.req.userId, skip, limit);
 
     return {
       total,
