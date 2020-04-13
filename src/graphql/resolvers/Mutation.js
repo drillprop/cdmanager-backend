@@ -8,21 +8,47 @@ const Mutation = {
   createAlbum: async (parent, { title, artist, image }, ctx, info) => {
     try {
       const user = await User.findById(ctx.req.userId);
-      if (!user) throw new Error('Sign in to add a cd');
-      const double = await User.findById(ctx.req.userId).elemMatch('albums', {
+      if (!user) throw Error('Sign in to add a cd');
+
+      // check if album exists in db
+      let album = await Album.findOne({
         title,
         artist,
         image,
       });
-      if (double) throw new Error('You already have this album');
-      const album = new Album({
-        title,
-        artist,
-        image,
+
+      // throw error if user has already created album
+      if (album) {
+        const hasAlbum = await User.findById(ctx.req.userId).where({
+          'albums.album': { $eq: album.id },
+        });
+        if (hasAlbum) throw Error('You already have that album');
+      }
+
+      // if album not exist in db, create new one
+      if (!album) {
+        album = await Album.create({
+          title,
+          artist,
+          image,
+        }).catch((err) => {
+          throw Error(err);
+        });
+      }
+
+      // update that album by setting owners
+      await album.updateOne({ $addToSet: { owners: user.id } });
+
+      // update user by adding album to user's albums
+      await user.updateOne({
+        $push: {
+          albums: {
+            album: album.id,
+            rating: 0,
+          },
+        },
       });
-      await album.save();
-      await user.albums.push(album);
-      user.save();
+
       return album;
     } catch (error) {
       throw Error(error);
@@ -31,7 +57,7 @@ const Mutation = {
   deleteAlbum: async (parent, { id }, ctx, info) => {
     try {
       const user = await User.findById(ctx.req.userId);
-      await user.albums.id(id).remove();
+      await user.albums.remove(id);
       await user.save();
       return { message: 'succes' };
     } catch (error) {

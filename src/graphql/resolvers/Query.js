@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import fetch from 'node-fetch';
 import User from '../../models/User';
-import { albumSearch, albumBrowse, reduceToObject } from './agregateFunctions';
+import albumBrowse from '../../utils/albumBrowse';
+import albumSearch from '../../utils/albumSearch';
 
 const Query = {
   albumslastfm: async (parent, args, ctx, info) => {
@@ -23,16 +24,21 @@ const Query = {
 
   albums: async (parent, { skip = 0, limit = 10, search = '' }, ctx) => {
     if (!ctx.req.userId) {
-      throw new Error('You need to login to see your recently added albums');
+      throw Error('You need to login to see your recently added albums');
     }
-    const searchedAlbums = await User.aggregate(
-      albumSearch(ctx.req.userId, search)
-    );
-    const browsedAlbums = await User.aggregate(
-      albumBrowse(ctx.req.userId, skip, limit)
-    );
-    if (search) return reduceToObject(searchedAlbums);
-    else return reduceToObject(browsedAlbums);
+    const user = await User.findById(ctx.req.userId);
+    if (!user)
+      throw Error('You need to login to see your recently added albums');
+
+    const total = user.albums.length;
+    const albums = search
+      ? await albumSearch(ctx.req.userId, search)
+      : await albumBrowse(ctx.req.userId, skip, limit);
+
+    return {
+      total,
+      albums,
+    };
   },
   me: async (parent, args, ctx, info) => {
     if (!ctx.req.userId) {

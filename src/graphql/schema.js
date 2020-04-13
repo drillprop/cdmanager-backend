@@ -48,12 +48,7 @@ const typeDefs = gql`
     ): User
     login(email: String!, password: String!): User
     signout: SuccessMessage
-    createAlbum(
-      title: String!
-      artist: String!
-      image: String
-      id: String
-    ): Album
+    createAlbum(title: String!, artist: String!, image: String): Album
     deleteAlbum(id: String!): SuccessMessage
   }
 `;
