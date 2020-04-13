@@ -4,16 +4,14 @@ import 'dotenv/config';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import db from './db';
-import Mutation from './graphql/resolvers/Mutation';
-import Query from './graphql/resolvers/Query';
+import resolvers from './graphql/resolvers';
 import typeDefs from './graphql/schema';
-const resolvers = { Query, Mutation };
 
 const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req, res }) => ({ ...req, ...res, db })
+  context: ({ req, res }) => ({ ...req, ...res, db }),
 });
 
 app.use(cookieParser());
@@ -31,8 +29,8 @@ server.applyMiddleware({
   path: '/',
   cors: {
     origin: process.env.FRONTEND_URL,
-    credentials: true
-  }
+    credentials: true,
+  },
 });
 
 app.listen({ port: 4000 }, () => {
