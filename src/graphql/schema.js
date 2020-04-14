@@ -14,7 +14,6 @@ const typeDefs = gql`
     name: String!
     email: String!
     password: String!
-    avatar: String
     id: String!
     albums: [Album]
   }
