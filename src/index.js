@@ -31,10 +31,10 @@ server.applyMiddleware({
   path: '/',
   cors: {
     origin: process.env.FRONTEND_URL,
-    credentials: true,
+    // credentials: true,
   },
 });
 
-app.listen({ port: 4000 }, () => {
+app.listen({ port: process.env.PORT || 4000 }, () => {
   console.log(`server ready at ${server.graphqlPath}`);
 });
