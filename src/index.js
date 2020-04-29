@@ -12,6 +12,8 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req, res }) => ({ ...req, ...res, db }),
+  introspection: true,
+  playground: true,
 });
 
 app.use(cookieParser());
