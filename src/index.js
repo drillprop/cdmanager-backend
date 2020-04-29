@@ -2,6 +2,7 @@ import { ApolloServer } from 'apollo-server-express';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import db from './db';
 import resolvers from './graphql/resolvers';
@@ -16,6 +17,13 @@ const server = new ApolloServer({
   playground: true,
 });
 
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
+
 app.use(cookieParser());
 app.use((req, res, next) => {
   const { token } = req.cookies;
@@ -29,10 +37,7 @@ app.use((req, res, next) => {
 server.applyMiddleware({
   app,
   path: '/',
-  cors: {
-    origin: process.env.FRONTEND_URL,
-    // credentials: true,
-  },
+  cors: false,
 });
 
 app.listen({ port: process.env.PORT || 4000 }, () => {
