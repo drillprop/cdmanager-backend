@@ -3,10 +3,11 @@ import Album from '../../models/Album';
 import User from '../../models/User';
 import albumBrowse from '../../utils/albumBrowse';
 import albumSearch from '../../utils/albumSearch';
+import { AuthenticationError, ApolloError } from 'apollo-server';
 
 export default {
   Query: {
-    albumslastfm: async (parent, args, ctx, info) => {
+    albumslastfm: async (_parent, args, _ctx, _info) => {
       const { search } = args;
       let baseUrl = `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${search}&api_key=${process.env.LASTFM_API_KEY}&limit=15&format=json`;
       const res = await fetch(baseUrl);
@@ -23,13 +24,18 @@ export default {
       return albumQuery;
     },
 
-    albums: async (parent, { skip = 0, limit = 10, search = '' }, ctx) => {
+    albums: async (_parent, { skip = 0, limit = 10, search = '' }, ctx) => {
       if (!ctx.req.userId) {
-        throw Error('You need to login to see your recently added albums');
+        throw new AuthenticationError(
+          'You need to login to see your recently added albums'
+        );
       }
+
       const user = await User.findById(ctx.req.userId);
       if (!user)
-        throw Error('You need to login to see your recently added albums');
+        throw new AuthenticationError(
+          'You need to login to see your recently added albums'
+        );
 
       const total = user.albums.length;
       const albums = search
@@ -43,56 +49,55 @@ export default {
     },
   },
   Mutation: {
-    createAlbum: async (parent, { title, artist, image }, ctx, info) => {
-      try {
-        const user = await User.findById(ctx.req.userId);
-        if (!user) throw Error('Sign in to add a cd');
+    createAlbum: async (_parent, { title, artist, image }, ctx, _info) => {
+      const user = await User.findById(ctx.req.userId);
+      if (!user)
+        throw new AuthenticationError(
+          'You need to login to see your recently added albums'
+        );
 
-        // check if album exists in db
-        let album = await Album.findOne({
+      // check if album exists in db
+      let album = await Album.findOne({
+        title,
+        artist,
+        image,
+      });
+
+      // throw error if user has already created album
+      if (album) {
+        const hasAlbum = await User.findById(ctx.req.userId).where({
+          'albums.album': { $eq: album.id },
+        });
+        if (hasAlbum) throw new ApolloError('You already have that album');
+      }
+
+      // if album not exist in db, create new one
+      if (!album) {
+        album = await Album.create({
           title,
           artist,
           image,
+        }).catch((err) => {
+          throw Error(err);
         });
-
-        // throw error if user has already created album
-        if (album) {
-          const hasAlbum = await User.findById(ctx.req.userId).where({
-            'albums.album': { $eq: album.id },
-          });
-          if (hasAlbum) throw Error('You already have that album');
-        }
-
-        // if album not exist in db, create new one
-        if (!album) {
-          album = await Album.create({
-            title,
-            artist,
-            image,
-          }).catch((err) => {
-            throw Error(err);
-          });
-        }
-
-        // update that album by setting owners
-        await album.updateOne({ $addToSet: { owners: user.id } });
-
-        // update user by adding album to user's albums
-        await user.updateOne({
-          $push: {
-            albums: {
-              album: album.id,
-              rating: 0,
-            },
-          },
-        });
-
-        return album;
-      } catch (error) {
-        throw Error(error);
       }
+
+      // update that album by setting owners
+      await album.updateOne({ $addToSet: { owners: user.id } });
+
+      // update user by adding album to user's albums
+      await user.updateOne({
+        $push: {
+          albums: {
+            album: album.id,
+            rating: 0,
+          },
+        },
+      });
+
+      return album;
     },
-    deleteAlbum: async (parent, { id }, ctx, info) => {
+    deleteAlbum: async (_parent, { id }, ctx, _info) => {
       try {
         const user = await User.findById(ctx.req.userId);
         await user.albums.remove(id);
