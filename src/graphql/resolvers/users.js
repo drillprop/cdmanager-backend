@@ -4,6 +4,7 @@ import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import User from '../../models/User';
 import validateLoginInput from '../../utils/validateLoginInput';
+import validateRegisterInput from '../../utils/validateRegisterInput';
 
 export default {
   Query: {
@@ -17,14 +18,25 @@ export default {
   Mutation: {
     register: async (_parent, args, ctx, _info) => {
       try {
-        const { name, email } = args;
+        const { name, email, password } = args;
+        const { valid, errors } = validateRegisterInput(name, email, password);
+
+        if (!valid) {
+          throw new UserInputError('Errors', { errors });
+        }
 
         // check if user already exist
         const emailExist = await User.findOne({ email });
-        if (emailExist) throw Error('User with this email already exist');
+        if (emailExist) {
+          errors.email = 'User with this email already exist';
+          throw new UserInputError(
+            'User with this email already exist',
+            errors
+          );
+        }
 
-        const password = await bcrypt.hash(args.password, 10);
-        const user = new User({ name, password, email });
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ name, email, password: hashedPassword });
         await user.save();
 
         // set cookie with token
