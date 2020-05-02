@@ -1,11 +1,13 @@
+import { UserInputError } from 'apollo-server';
 import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import User from '../../models/User';
+import validateLoginInput from '../../utils/validateLoginInput';
 
 export default {
   Query: {
-    me: async (parent, args, ctx, info) => {
+    me: async (_parent, _args, ctx, _info) => {
       if (!ctx.req.userId) {
         return null;
       }
@@ -13,7 +15,7 @@ export default {
     },
   },
   Mutation: {
-    register: async (parent, args, ctx, info) => {
+    register: async (_parent, args, ctx, _info) => {
       try {
         const { name, email } = args;
 
@@ -37,15 +39,26 @@ export default {
         throw Error(error);
       }
     },
-    login: async (parent, args, ctx, info) => {
+    login: async (_parent, args, ctx, _info) => {
       try {
         const { email, password } = args;
+        const { valid, errors } = validateLoginInput(email, password);
+
+        if (!valid) {
+          throw new UserInputError('Errors', { errors });
+        }
 
         const user = await User.findOne({ email });
-        if (!user) throw Error('Password or email is incorrect');
+        if (!user) {
+          errors.general = 'User not found';
+          throw new UserInputError('User not found', { errors });
+        }
 
         const correctPasword = await bcrypt.compare(password, user.password);
-        if (!correctPasword) throw Error('Password or email is incorrect');
+        if (!correctPasword) {
+          errors.general = 'Password is incorrect';
+          throw new UserInputError('Password is incorrect', { errors });
+        }
 
         // set cookie with token
         const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
@@ -59,7 +72,7 @@ export default {
         throw Error(error);
       }
     },
-    signout: (parent, args, ctx, info) => {
+    signout: (_parent, _args, ctx, _info) => {
       ctx.res.clearCookie('token');
       return { message: 'success' };
     },
