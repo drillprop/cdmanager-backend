@@ -3,7 +3,8 @@ import 'dotenv/config';
 
 mongoose.connect(process.env.MONGODB_PATH, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useFindAndModify: false,
 });
 mongoose.set('useCreateIndex', true);
 
