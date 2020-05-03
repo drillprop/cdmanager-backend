@@ -49,6 +49,7 @@ const typeDefs = gql`
     signout: SuccessMessage
     createAlbum(title: String!, artist: String!, image: String): Album
     deleteAlbum(id: String!): SuccessMessage
+    rateAlbum(id: String!, review: String, value: Int): SuccessMessage
   }
 `;
 
