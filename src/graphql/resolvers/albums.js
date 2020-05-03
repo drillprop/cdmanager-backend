@@ -60,7 +60,7 @@ export default {
       // throw error if user has already created album
       if (album) {
         const hasAlbum = await User.findById(ctx.req.userId).where({
-          'albums.album': { $eq: album.id },
+          albums: { $eq: album.id },
         });
         if (hasAlbum) throw new ApolloError('You already have that album');
       }
@@ -82,10 +82,7 @@ export default {
       // update user by adding album to user's albums
       await user.updateOne({
         $push: {
-          albums: {
-            album: album.id,
-            rating: 0,
-          },
+          albums: album.id,
         },
       });
 
