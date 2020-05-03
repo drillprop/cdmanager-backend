@@ -10,7 +10,6 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Album',
       },
-      rating: { type: Number },
     },
   ],
 });
