@@ -4,50 +4,30 @@ import { Types } from 'mongoose';
 export default async (id, skip, limit) => {
   const result = await User.aggregate([
     { $match: { _id: Types.ObjectId(id) } },
-    {
-      $unwind: {
-        path: '$albums',
-      },
-    },
-    { $sort: { 'albums._id': -1 } },
+    { $unwind: { path: '$albums', includeArrayIndex: 'index' } },
+    { $sort: { index: -1 } },
     { $skip: skip },
     { $limit: limit },
     {
       $lookup: {
         from: 'albums',
-        localField: 'albums.album',
+        localField: 'albums',
         foreignField: '_id',
         as: 'album',
       },
     },
-    {
-      $unwind: {
-        path: '$album',
-      },
-    },
-    {
-      $addFields: {
-        id: '$albums._id',
-        artist: '$album.artist',
-        title: '$album.title',
-        image: '$album.image',
-        rate: '$albums.rating',
-      },
-    },
+    { $unwind: { path: '$album' } },
     {
       $project: {
         _id: 0,
-        id: 1,
-        artist: 1,
-        title: 1,
-        image: 1,
-        rate: 1,
+        index: 1,
+        title: '$album.title',
+        artist: '$album.artist',
+        image: '$album.image',
+        id: '$album._id',
       },
     },
   ]).exec();
 
-  return result.map((album) => ({
-    ...album,
-    id: album.id.toString(),
-  }));
+  return result.map((album) => ({ ...album, id: album.id.toString() }));
 };
