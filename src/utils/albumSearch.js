@@ -24,9 +24,7 @@ export default async (id, search) => {
         title: '$album.title',
         image: '$album.image',
         rates: '$album.rates',
-        rateSum: '$album.rateSum',
-        rateAvg: '$album.rateAvg',
-        rateCount: '$album.rateCount',
+        rateCount: { $size: '$album.rates' },
       },
     },
     {
@@ -47,6 +45,7 @@ export default async (id, search) => {
     },
     {
       $addFields: {
+        rateAvg: { $avg: '$rates.value' },
         yourRate: {
           $arrayElemAt: [
             {
