@@ -20,11 +20,40 @@ export default async (id, skip, limit) => {
     {
       $project: {
         _id: 0,
+        userId: '$_id',
         index: 1,
-        title: '$album.title',
-        artist: '$album.artist',
-        image: '$album.image',
         id: '$album._id',
+        artist: '$album.artist',
+        title: '$album.title',
+        image: '$album.image',
+        rates: '$album.rates',
+        rateSum: '$album.rateSum',
+        rateAvg: '$album.rateAvg',
+        rateCount: '$album.rateCount',
+      },
+    },
+    {
+      $lookup: {
+        from: 'rates',
+        localField: 'rates',
+        foreignField: '_id',
+        as: 'rates',
+      },
+    },
+    {
+      $addFields: {
+        yourRate: {
+          $arrayElemAt: [
+            {
+              $filter: {
+                input: '$rates',
+                as: 'rate',
+                cond: { $eq: ['$$rate.userId', '$userId'] },
+              },
+            },
+            0,
+          ],
+        },
       },
     },
   ]).exec();
