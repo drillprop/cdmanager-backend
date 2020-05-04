@@ -10,8 +10,9 @@ export const albumSchema = new Schema({
       ref: 'Rate',
     },
   ],
+  rateSum: { type: Number, default: 0 },
   rateCount: { type: Number, default: 0 },
-  rateAverage: { type: Number, default: 0 },
+  rateAvg: { type: Number, default: 0 },
   owners: [
     {
       type: Schema.Types.ObjectId,
