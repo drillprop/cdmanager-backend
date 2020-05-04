@@ -17,11 +17,16 @@ export default async (id, search) => {
     {
       $project: {
         _id: 0,
+        userId: '$_id',
         index: 1,
         id: '$album._id',
-        title: '$album.title',
         artist: '$album.artist',
+        title: '$album.title',
         image: '$album.image',
+        rates: '$album.rates',
+        rateSum: '$album.rateSum',
+        rateAvg: '$album.rateAvg',
+        rateCount: '$album.rateCount',
       },
     },
     {
@@ -32,6 +37,31 @@ export default async (id, search) => {
         ],
       },
     },
+    {
+      $lookup: {
+        from: 'rates',
+        localField: 'rates',
+        foreignField: '_id',
+        as: 'rates',
+      },
+    },
+    {
+      $addFields: {
+        yourRate: {
+          $arrayElemAt: [
+            {
+              $filter: {
+                input: '$rates',
+                as: 'rate',
+                cond: { $eq: ['$$rate.userId', '$userId'] },
+              },
+            },
+            0,
+          ],
+        },
+      },
+    },
   ]);
+
   return result.map((album) => ({ ...album, id: album.id.toString() }));
 };
