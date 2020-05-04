@@ -93,6 +93,11 @@ export default {
         const user = await User.findById(ctx.req.userId);
         await user.albums.remove(id);
         await user.save();
+
+        const album = await Album.findById(id);
+        await album.owners.remove(ctx.req.userId);
+        await album.save();
+
         return { message: 'succes' };
       } catch (error) {
         throw Error(error);
