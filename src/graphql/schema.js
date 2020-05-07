@@ -18,11 +18,19 @@ const typeDefs = gql`
     albums: [Album]
   }
 
+  type UserRate {
+    review: String
+    value: Int
+  }
+
   type Album {
     id: String!
     title: String!
     artist: String!
     image: String
+    rateAvg: Int
+    rateCount: Int
+    yourRate: UserRate
   }
 
   type FetchedAlbum {
