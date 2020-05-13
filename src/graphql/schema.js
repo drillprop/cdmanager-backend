@@ -28,7 +28,7 @@ const typeDefs = gql`
     title: String!
     artist: String!
     image: String
-    rateAvg: Int
+    rateAvg: Float
     rateCount: Int
     yourRate: UserRate
   }
