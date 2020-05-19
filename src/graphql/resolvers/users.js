@@ -28,7 +28,9 @@ export default {
       const emailExist = await User.findOne({ email });
       if (emailExist) {
         errors.email = 'User with this email already exist';
-        throw new UserInputError('User with this email already exist', errors);
+        throw new UserInputError('User with this email already exist', {
+          errors,
+        });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
