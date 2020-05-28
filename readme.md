@@ -11,7 +11,11 @@ You can find backend code [here](https://github.com/drillprop/cdmanager-frontend
 
 ## Description
 
-Simple app where authenticated users can create and manage their own albums collection.
+It's a CRUD application with authentication system, where users can
+create and manage their CD collection.
+
+Application is using Last.fm API
+to fetch artists and albums titles and covers.
 
 ## Technologies
 
@@ -52,6 +56,5 @@ npm install
 
 If you want to play around, you can sign in with this email and password:
 
-**email:** test@test.com
-
-**password:** test123
+    email: test@test.com
+    password test123
