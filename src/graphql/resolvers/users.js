@@ -42,6 +42,8 @@ export default {
       ctx.res.cookie('token', token, {
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 365,
+        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production' ? true : false,
       });
 
       return user;
@@ -71,6 +73,8 @@ export default {
       ctx.res.cookie('token', token, {
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 365,
+        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production' ? true : false,
       });
 
       return user;
