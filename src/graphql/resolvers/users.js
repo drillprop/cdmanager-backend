@@ -80,7 +80,12 @@ export default {
       return user;
     },
     signout: (_parent, _args, ctx, _info) => {
-      ctx.res.clearCookie('token');
+      ctx.res.clearCookie('token', {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 365,
+        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+      });
       return { message: 'success' };
     },
   },
