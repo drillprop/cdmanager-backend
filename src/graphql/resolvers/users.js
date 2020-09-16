@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import User from '../../models/User';
+import setCookieWithToken from '../../utils/setCookieWithToken';
 import validateLoginInput from '../../utils/validateLoginInput';
 import validateRegisterInput from '../../utils/validateRegisterInput';
 
@@ -37,14 +38,8 @@ export default {
       const user = new User({ name, email, password: hashedPassword });
       await user.save();
 
-      // set cookie with token
       const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
-      ctx.res.cookie('token', token, {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 365,
-        sameSite: 'none',
-        secure: process.env.NODE_ENV === 'production' ? true : false,
-      });
+      setCookieWithToken(ctx.res, token);
 
       return user;
     },
@@ -68,22 +63,15 @@ export default {
         throw new UserInputError('Password is incorrect', { errors });
       }
 
-      // set cookie with token
       const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
-      ctx.res.cookie('token', token, {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 365,
-        sameSite: 'none',
-        secure: process.env.NODE_ENV === 'production' ? true : false,
-      });
+      setCookieWithToken(ctx.res, token);
 
       return user;
     },
     signout: (_parent, _args, ctx, _info) => {
       ctx.res.clearCookie('token', {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 365,
-        sameSite: 'none',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         secure: process.env.NODE_ENV === 'production' ? true : false,
       });
       return { message: 'success' };
